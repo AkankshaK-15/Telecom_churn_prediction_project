@@ -2,6 +2,8 @@ from flask import Flask, request, render_template
 import pickle
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
+
 
 app = Flask(__name__)
 
@@ -36,27 +38,34 @@ def predict():
       input_18 = request.form['MonthlyCharges']
       input_19 = request.form['TotalCharges']
 
-      model = pickle.load(open("telecom_model.sav", "rb"))
+      model = pickle.load(open("telecom_model.sav","rb"))
 
-      sample_df = pd.read_csv("first_telc.csv")
+      sample_df = pd.read_csv("first_telc.csv",delimiter=',')
 
-      print(sample_df.isnull().sum())
+      sample_df.drop(columns=['Unnamed: 0'],axis=1,inplace=True)
+
+      if (input_2 == "Yes"):
+          input_2 = 1
+      else:
+          input_2 = 0
 
       data = [[input_1,input_2,input_3,input_4,input_5,input_6,input_7,input_8,
                input_9,input_10,input_11,input_12,input_13,input_14,input_15,input_16,
                input_17,input_18,input_19]]
 
-      print(data)
+      #print(data)
 
-      new_df = pd.DataFrame(data, columns=[['gender','SeniorCitizen','Partner','Dependents','tenure','PhoneService',
+      new_df = pd.DataFrame(data, columns=['gender','SeniorCitizen','Partner','Dependents','tenure','PhoneService',
                                             'MultipleLines','InternetService','OnlineSecurity','OnlineBackup',
                                             'DeviceProtection','TechSupport','StreamingTV','StreamingMovies','Contract',
-                                            'PaperlessBilling','PaymentMethod','MonthlyCharges','TotalCharges']])
-      print(new_df.head(1))
+                                            'PaperlessBilling','PaymentMethod','MonthlyCharges','TotalCharges'])
+      #print(new_df.dtypes)
 
-      final_df = pd.concat([sample_df, new_df], ignore_index=True)
+      final_df = pd.concat([sample_df, new_df],axis=0, ignore_index=True)
 
-
+      #print(final_df.head(3))
+      #print(list(final_df.columns))
+      #print(final_df.tail(3))
       #new_df.columns = [x[0] for x in new_df.columns]
 
       labels = ["{0} - {1}".format(i, i + 11) for i in range(1, 72, 12)]
@@ -64,23 +73,24 @@ def predict():
 
       final_df.drop(columns=['tenure'], axis=1, inplace=True)
 
-      print(final_df)
+      print(final_df.head(3))
 
+      df_dummies = pd.get_dummies(final_df,columns=['gender','SeniorCitizen','Partner','Dependents','PhoneService',
+                                            'MultipleLines','InternetService','OnlineSecurity','OnlineBackup',
+                                            'DeviceProtection','TechSupport','StreamingTV','StreamingMovies','Contract',
+                                            'PaperlessBilling','PaymentMethod',
+                                            'tenure_group'],drop_first=True)
 
-      final_df_dummies = pd.get_dummies(final_df[['gender','SeniorCitizen','Partner','Dependents','PhoneService',
-                                                       'MultipleLines','InternetService','OnlineSecurity','OnlineBackup'
-                                                      ,'DeviceProtection','TechSupport','StreamingTV','StreamingMovies'
-                                                      ,'Contract','PaperlessBilling','PaymentMethod','tenure_group']]
-                                                      ,drop_first=True)
+      #print(df_dummies.shape)
+      #print(df_dummies.columns)
+      print(df_dummies.tail(1))
 
-      print(final_df_dummies.shape)
-
-      prediction = model.predict(final_df_dummies.tail(1))
+      prediction = model.predict(df_dummies.tail(1))
 
       if prediction == 0:
-            return render_template('index.html', prediction_texts="This customer is likely to CONTINUE services !")
+        return render_template('index.html', prediction_text="The customer is likely to CONTINUE services !")
       else:
-            return render_template('index.html', prediction_text="The customer is likely to be CHURNED!!!")
+        return render_template('index.html', prediction_text="The customer is likely to CHURN!!!")
 
     else:
         return render_template('index.html')
@@ -88,5 +98,27 @@ def predict():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
