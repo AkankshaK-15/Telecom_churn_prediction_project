@@ -2,8 +2,9 @@
 # Telecom Churn Prediction
 
 In the telecom industry, customers are able to choose from multiple service providers and actively switch from one operator to another. In this highly competitive market, the telecommunications industry experiences an average of 15-25% annual churn rate.
+    So for customer retention and reducing the customer churn, telecom companies need to predict which customers are at high risk of churn.
     
-So for customer retention and reducing the customer churn, telecom companies need to predict which customers are at high risk of churn.
+   This is an end-to-end project to predict the customer churn based on some of the key indicators like tenure, monthly charges, total charges etc.   
 
 
 ## Web-app link
