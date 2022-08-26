@@ -19,12 +19,10 @@ https://telecom--churn.herokuapp.com/
 
 **IDE:** Jupyter Notebook , Pycharm 
 
-**DEPLOYMENT:** Docker, Heroku , Git_actions
+**DEPLOYMENT:** Docker, Heroku , Github_actions
 
 
 ## Libraries_used
-
-Flask
 
 Pandas
 
